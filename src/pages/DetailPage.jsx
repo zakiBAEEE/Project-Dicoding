@@ -1,44 +1,43 @@
-import React, { useState } from 'react';
-import { getNote } from '../utils/local-data';
+import React, { useContext, useState } from 'react';
+import { getNote } from '../utils/api';
 import { useParams, useNavigate } from 'react-router-dom';
 import NoteDetail from '../components/NoteDetail';
-import { deleteNote } from '../utils/local-data';
-import { archiveNote } from '../utils/local-data';
-import { unarchiveNote } from '../utils/local-data';
+import { deleteNote } from '../utils/api';
+import { archiveNote } from '../utils/api';
+import { unarchiveNote } from '../utils/api';
+import LocaleContext from '../contexts/LocaleContext';
 
 function DetailPage() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [notes, setNotes] = useState(null);
+    const [note, setNote] = useState(null);
+    const { locale } = useContext(LocaleContext);
 
     React.useEffect(() => {
-        const catatan = getNote(id);
-        setNotes(catatan);
+        getNote(id).then(({ data }) => { setNote(data) })
     }, [])
 
-    function onDeleteNote() {
-        deleteNote(id);
+    async function onDeleteNote() {
+        await deleteNote(id);
         navigate('/')
     }
 
-    function onArchineNote() {
-        archiveNote(id);
+    async function onArchineNote() {
+        await archiveNote(id);
         navigate('/')
     }
 
-    function onUnArchiveNote() {
-        unarchiveNote(id);
+    async function onUnArchiveNote() {
+        await unarchiveNote(id);
         navigate('/');
     }
 
-    if (notes == null) {
-        return (
-            <p>Data Kosong</p>
-        )
+    if (note == null) {
+        return locale === 'id' ? <p>Data Kosong</p> : <p>Empty Data</p>
     }
 
     return (
-        <NoteDetail {...notes} onDelete={onDeleteNote} onArchive={onArchineNote} onUnArchive={onUnArchiveNote} />
+        <NoteDetail {...note} onDelete={onDeleteNote} onArchive={onArchineNote} onUnArchive={onUnArchiveNote} />
     )
 }
 

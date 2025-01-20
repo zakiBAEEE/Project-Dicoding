@@ -1,11 +1,12 @@
 import React from 'react'
 import useInput from '../customHooks/useInput'
 import { login } from '../utils/api';
+import LocaleContext from '../contexts/LocaleContext';
 
 function LoginPage({ onLoginSuccess }) {
     const [email, onChangeEmail] = useInput();
     const [password, onChangePassword] = useInput();
-
+    const { locale } = React.useContext(LocaleContext);
     async function onLoginHandler(e) {
         e.preventDefault();
         const { error, data } = await login({ email, password });
@@ -17,7 +18,10 @@ function LoginPage({ onLoginSuccess }) {
 
     return (
         <section className='login-page'>
-            <h2>Yuk, login untuk menggunakan aplikasi</h2>
+            {
+                locale == 'id' ? <h2>Yuk, Masuk untuk menggunakan aplikasi</h2> : <h2>Come on, Login to Use App</h2>
+            }
+
             <div className="input-login">
                 <label htmlFor='email'>Email</label>
                 <input type="email" id='email' value={email} onChange={onChangeEmail} />
@@ -25,7 +29,10 @@ function LoginPage({ onLoginSuccess }) {
                 <input type="password" id='password' value={password} onChange={onChangePassword} />
                 <button type='button' onClick={onLoginHandler}>Login</button>
             </div>
-            {/* <p>Belum punya akun? <a href="/register">Daftar Disini</a></p> */}
+            {
+                locale == 'id' ? <p>Belum punya akun? <a href="/register">Daftar Disini</a></p> : <p>Dont't Have An Account? <a href="/register">Register Here</a></p>
+            }
+
         </section>
     )
 }
